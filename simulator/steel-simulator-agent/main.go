@@ -5,6 +5,7 @@ import (
 	"steel-lang/communication"
 	"steel-lang/datastructure"
 	"steel-lang/semantics"
+	"steel-simulator-agent/coordinator"
 	"steel-simulator-agent/memory"
 	"steel-simulator-config/config"
 	"sync"
@@ -23,6 +24,11 @@ func main() {
 	if err != nil {
 		log.Fatalf("Bad config deserialization: %v", err)
 	}
+	conn, err := coordinator.GetConnection()
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer conn.Close()
 	mem, err := memory.New(agent.MemoryController, agent.Memory)
 	if err != nil {
 		log.Fatalln(err)
