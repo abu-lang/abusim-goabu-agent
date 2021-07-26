@@ -24,11 +24,15 @@ func main() {
 	if err != nil {
 		log.Fatalf("Bad config deserialization: %v", err)
 	}
-	conn, err := coordinator.GetConnection()
+	coord, err := coordinator.New()
 	if err != nil {
 		log.Fatalln(err)
 	}
-	defer conn.Close()
+	defer coord.Close()
+	err = coord.SendInit(configStr)
+	if err != nil {
+		log.Fatalln(err)
+	}
 	mem, err := memory.New(agent.MemoryController, agent.Memory)
 	if err != nil {
 		log.Fatalln(err)
