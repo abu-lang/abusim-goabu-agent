@@ -29,7 +29,7 @@ func main() {
 		log.Fatalln(err)
 	}
 	defer coord.Close()
-	err = coord.SendInit(configStr)
+	err = coord.SendSelfName(agent.Name)
 	if err != nil {
 		log.Fatalln(err)
 	}

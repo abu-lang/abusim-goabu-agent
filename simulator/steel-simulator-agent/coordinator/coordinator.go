@@ -28,10 +28,10 @@ func New() (*Coordinator, error) {
 	}, nil
 }
 
-func (c *Coordinator) SendInit(configStr string) error {
+func (c *Coordinator) SendSelfName(name string) error {
 	err := c.coord.Write(&communication.CoordinatorMessage{
 		Type:    communication.CoordinatorMessageTypeINIT,
-		Payload: configStr,
+		Payload: name,
 	})
 	if err != nil {
 		return err
