@@ -24,16 +24,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("Bad config deserialization: %v", err)
 	}
-	coord, err := coordinator.New()
-	if err != nil {
-		log.Fatalln(err)
-	}
-	defer coord.Close()
-	err = coord.SendSelfName(agent.Name)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	go coord.HandleMessages()
 	log.Println("Creating memory")
 	mem, err := memory.New(agent.MemoryController, agent.Memory)
 	if err != nil {
@@ -44,6 +34,17 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	log.Println("Connecting to coordinator")
+	coord, err := coordinator.New()
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer coord.Close()
+	err = coord.SendSelfName(agent.Name)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	go coord.HandleMessages(exec)
 	log.Println("Starting main loop")
 	for {
 		exec.Exec()

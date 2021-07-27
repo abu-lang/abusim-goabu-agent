@@ -4,6 +4,7 @@ import (
 	"errors"
 	"log"
 	"net"
+	"steel-lang/semantics"
 	"steel-simulator-config/communication"
 )
 
@@ -47,14 +48,26 @@ func (c *Coordinator) SendSelfName(name string) error {
 	return nil
 }
 
-func (c *Coordinator) HandleMessages() {
+func (c *Coordinator) HandleMessages(exec *semantics.MuSteelExecuter) {
 	for {
 		msg, err := c.coord.Read()
 		if err != nil {
 			log.Println(err)
 			break
 		}
-		log.Println(msg)
+		switch msg.Type {
+		case communication.CoordinatorMessageTypeMemoryREQ:
+			err := c.coord.Write(&communication.CoordinatorMessage{
+				Type:    communication.CoordinatorMessageTypeMemoryRES,
+				Payload: exec.GetState().Memory,
+			})
+			if err != nil {
+				log.Println(err)
+				continue
+			}
+		default:
+			log.Println("Unknown message type")
+		}
 	}
 }
 
