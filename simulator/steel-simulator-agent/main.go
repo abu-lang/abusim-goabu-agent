@@ -6,7 +6,7 @@ import (
 	"steel-lang/semantics"
 	"steel-simulator-agent/coordinator"
 	"steel-simulator-agent/memory"
-	"steel-simulator-config/config"
+	"steel-simulator-common/config"
 	"time"
 
 	"log"

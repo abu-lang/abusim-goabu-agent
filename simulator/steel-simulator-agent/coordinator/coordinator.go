@@ -5,7 +5,7 @@ import (
 	"log"
 	"net"
 	"steel-lang/semantics"
-	"steel-simulator-config/communication"
+	"steel-simulator-common/communication"
 )
 
 type Coordinator struct {
