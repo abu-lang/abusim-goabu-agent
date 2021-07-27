@@ -33,13 +33,19 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
+	log.Println("Creating memory")
 	mem, err := memory.New(agent.MemoryController, agent.Memory)
 	if err != nil {
 		log.Fatalln(err)
 	}
+	log.Println("Creating executer")
+	exec, err := semantics.NewMuSteelExecuter(mem, agent.Rules, communication.MakeMemberlistAgent(mem.ResourceNames(), 5000, agent.Endpoints))
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println("Starting main loop")
 	for {
-		// log.Println(agent)
-		log.Println(mem.GetResources())
+		exec.Exec()
 		time.Sleep(5 * time.Second)
 	}
 }
