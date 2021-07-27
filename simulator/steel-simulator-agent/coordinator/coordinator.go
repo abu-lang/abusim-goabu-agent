@@ -65,6 +65,20 @@ func (c *Coordinator) HandleMessages(exec *semantics.MuSteelExecuter) {
 				log.Println(err)
 				continue
 			}
+		case communication.CoordinatorMessageTypeInputREQ:
+			errInput := exec.Input(msg.Payload.(string))
+			errInputPayload := ""
+			if errInput != nil {
+				errInputPayload = errInput.Error()
+			}
+			err := c.coord.Write(&communication.CoordinatorMessage{
+				Type:    communication.CoordinatorMessageTypeInputRES,
+				Payload: errInputPayload,
+			})
+			if err != nil {
+				log.Println(err)
+				continue
+			}
 		default:
 			log.Println("Unknown message type")
 		}
