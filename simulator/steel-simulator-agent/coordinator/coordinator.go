@@ -2,6 +2,7 @@ package coordinator
 
 import (
 	"errors"
+	"log"
 	"net"
 	"steel-simulator-config/communication"
 )
@@ -44,6 +45,17 @@ func (c *Coordinator) SendSelfName(name string) error {
 		return errors.New("unexpected response to init")
 	}
 	return nil
+}
+
+func (c *Coordinator) HandleMessages() {
+	for {
+		msg, err := c.coord.Read()
+		if err != nil {
+			log.Println(err)
+			break
+		}
+		log.Println(msg)
+	}
 }
 
 func (c *Coordinator) Close() {

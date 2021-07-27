@@ -33,6 +33,7 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
+	go coord.HandleMessages()
 	log.Println("Creating memory")
 	mem, err := memory.New(agent.MemoryController, agent.Memory)
 	if err != nil {
