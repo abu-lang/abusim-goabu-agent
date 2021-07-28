@@ -42,7 +42,7 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	go coord.HandleMessages(exec)
+	go coord.HandleMessages(exec, agent)
 	log.Println("Starting main loop")
 	for {
 		exec.Exec()

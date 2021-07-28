@@ -6,6 +6,7 @@ import (
 	"net"
 	"steel-lang/semantics"
 	"steel-simulator-common/communication"
+	"steel-simulator-common/config"
 )
 
 type Coordinator struct {
@@ -48,7 +49,7 @@ func (c *Coordinator) SendSelfName(name string) error {
 	return nil
 }
 
-func (c *Coordinator) HandleMessages(exec *semantics.MuSteelExecuter) {
+func (c *Coordinator) HandleMessages(exec *semantics.MuSteelExecuter, agent config.Agent) {
 	for {
 		msg, err := c.coord.Read()
 		if err != nil {
@@ -74,6 +75,15 @@ func (c *Coordinator) HandleMessages(exec *semantics.MuSteelExecuter) {
 			err := c.coord.Write(&communication.CoordinatorMessage{
 				Type:    communication.CoordinatorMessageTypeInputRES,
 				Payload: errInputPayload,
+			})
+			if err != nil {
+				log.Println(err)
+				continue
+			}
+		case communication.CoordinatorMessageTypeConfigREQ:
+			err := c.coord.Write(&communication.CoordinatorMessage{
+				Type:    communication.CoordinatorMessageTypeConfigRES,
+				Payload: agent,
 			})
 			if err != nil {
 				log.Println(err)
