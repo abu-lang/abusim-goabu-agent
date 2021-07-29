@@ -7,8 +7,11 @@ import (
 	"time"
 )
 
+// New creates a new memory, based on the basic resources
 func NewBasicMemory(items map[string]map[string][]string) (datastructure.ResourceController, error) {
+	// I create an empty basic memory...
 	mem := datastructure.MakeResources()
+	// ... and I range over the items to initialize it
 	for vartype, values := range items {
 		for name, initvalues := range values {
 			switch vartype {
