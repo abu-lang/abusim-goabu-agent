@@ -110,6 +110,7 @@ func (a *AgentEndpoint) HandleMessages(exec *semantics.MuSteelExecuter, agent co
 	}
 }
 
+// Close closes the endpoint connection
 func (e *AgentEndpoint) Close() {
 	e.end.Close()
 }
