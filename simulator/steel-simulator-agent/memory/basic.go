@@ -8,123 +8,81 @@ import (
 )
 
 // New creates a new memory, based on the basic resources
-func NewBasicMemory(items map[string]map[string][]string) (datastructure.ResourceController, error) {
+func NewBasicMemory(items map[string]map[string]string) (datastructure.ResourceController, error) {
 	// I create an empty basic memory...
 	mem := datastructure.MakeResources()
-	// ... and I range over the items to initialize it
+	// ... and I range over the items to initialize it, with the provided initialization value or a default
 	for vartype, values := range items {
-		for name, initvalues := range values {
+		for name, initvalue := range values {
 			switch vartype {
 			case "bool":
-				val, err := assingBool(initvalues)
-				if err != nil {
-					return nil, err
+				if val, err := getBasicMemoryBool(initvalue); err != nil {
+					return nil, fmt.Errorf("invalid initialization value: %w", err)
+				} else {
+					mem.Bool[name] = val
 				}
-				mem.Bool[name] = *val
 			case "integer":
-				val, err := assingInteger(initvalues)
-				if err != nil {
-					return nil, err
+				if val, err := getBasicMemoryInteger(initvalue); err != nil {
+					return nil, fmt.Errorf("invalid initialization value: %w", err)
+				} else {
+					mem.Integer[name] = val
 				}
-				mem.Integer[name] = *val
 			case "float":
-				val, err := assingFloat(initvalues)
-				if err != nil {
-					return nil, err
+				if val, err := getBasicMemoryFloat(initvalue); err != nil {
+					return nil, fmt.Errorf("invalid initialization value: %w", err)
+				} else {
+					mem.Float[name] = val
 				}
-				mem.Float[name] = *val
 			case "text":
-				val, err := assingText(initvalues)
-				if err != nil {
-					return nil, err
+				if val, err := getBasicMemoryText(initvalue); err != nil {
+					return nil, fmt.Errorf("invalid initialization value: %w", err)
+				} else {
+					mem.Text[name] = val
 				}
-				mem.Text[name] = *val
 			case "time":
-				val, err := assingTime(initvalues)
-				if err != nil {
-					return nil, err
+				if val, err := getBasicMemoryTime(initvalue); err != nil {
+					return nil, fmt.Errorf("invalid initialization value: %w", err)
+				} else {
+					mem.Time[name] = val
 				}
-				mem.Time[name] = *val
-			default:
-				return nil, fmt.Errorf("unknown type \"%s\"", vartype)
 			}
 		}
 	}
 	return mem, nil
 }
 
-func assingBool(initvalues []string) (*bool, error) {
-	switch len(initvalues) {
-	case 0:
-		def := false
-		return &def, nil
-	case 1:
-		val, err := strconv.ParseBool(initvalues[0])
-		if err != nil {
-			return nil, err
-		}
-		return &val, nil
-	default:
-		return nil, ErrInvalidValues
+func getBasicMemoryBool(initvalue string) (bool, error) {
+	if initvalue == "" {
+		return false, nil
+	} else {
+		return strconv.ParseBool(initvalue)
 	}
 }
 
-func assingInteger(initvalues []string) (*int64, error) {
-	switch len(initvalues) {
-	case 0:
-		def := int64(0)
-		return &def, nil
-	case 1:
-		val, err := strconv.ParseInt(initvalues[0], 10, 64)
-		if err != nil {
-			return nil, err
-		}
-		return &val, nil
-	default:
-		return nil, ErrInvalidValues
+func getBasicMemoryInteger(initvalue string) (int64, error) {
+	if initvalue == "" {
+		return 0, nil
+	} else {
+		return strconv.ParseInt(initvalue, 10, 64)
 	}
 }
 
-func assingFloat(initvalues []string) (*float64, error) {
-	switch len(initvalues) {
-	case 0:
-		def := float64(0)
-		return &def, nil
-	case 1:
-		val, err := strconv.ParseFloat(initvalues[0], 64)
-		if err != nil {
-			return nil, err
-		}
-		return &val, nil
-	default:
-		return nil, ErrInvalidValues
+func getBasicMemoryFloat(initvalue string) (float64, error) {
+	if initvalue == "" {
+		return 0, nil
+	} else {
+		return strconv.ParseFloat(initvalue, 64)
 	}
 }
 
-func assingText(initvalues []string) (*string, error) {
-	switch len(initvalues) {
-	case 0:
-		def := ""
-		return &def, nil
-	case 1:
-		return &initvalues[0], nil
-	default:
-		return nil, ErrInvalidValues
-	}
+func getBasicMemoryText(initvalue string) (string, error) {
+	return initvalue, nil
 }
 
-func assingTime(initvalues []string) (*time.Time, error) {
-	switch len(initvalues) {
-	case 0:
-		def := time.Now()
-		return &def, nil
-	case 1:
-		val, err := time.Parse(time.Stamp, initvalues[0])
-		if err != nil {
-			return nil, err
-		}
-		return &val, nil
-	default:
-		return nil, ErrInvalidValues
+func getBasicMemoryTime(initvalue string) (time.Time, error) {
+	if initvalue == "" {
+		return time.Now(), nil
+	} else {
+		return time.Parse(time.Stamp, initvalue)
 	}
 }
