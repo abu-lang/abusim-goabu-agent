@@ -4,7 +4,7 @@ import (
 	"os"
 	"steel-lang/communication"
 	"steel-lang/semantics"
-	"steel-simulator-agent/coordinator"
+	"steel-simulator-agent/endpoint"
 	"steel-simulator-agent/memory"
 	"steel-simulator-common/config"
 	"time"
@@ -38,18 +38,18 @@ func main() {
 	}
 	// I connect to the coordinator...
 	log.Println("Connecting to coordinator")
-	coord, err := coordinator.New()
+	end, err := endpoint.New()
 	if err != nil {
 		log.Fatalln(err)
 	}
-	defer coord.Close()
+	defer end.Close()
 	// ... I send to it the initialization message...
-	err = coord.SendSelfName(agent.Name)
+	err = end.SendInit(agent.Name)
 	if err != nil {
 		log.Fatalln(err)
 	}
 	// ... and I start the main message loop
-	go coord.HandleMessages(exec, agent)
+	go end.HandleMessages(exec, agent)
 	// Finally, I start the executer loop
 	log.Println("Starting main loop")
 	for {
