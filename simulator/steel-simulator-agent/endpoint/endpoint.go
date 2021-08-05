@@ -55,7 +55,7 @@ func (a *AgentEndpoint) SendInit(name string) error {
 }
 
 // HandleMessages listens for messages and responds to them
-func (a *AgentEndpoint) HandleMessages(exec *semantics.MuSteelExecuter, agent config.Agent) {
+func (a *AgentEndpoint) HandleMessages(exec *semantics.MuSteelExecuter, agent config.Agent, paused *bool) {
 	for {
 		// I read a message...
 		msg, err := a.end.Read()
@@ -67,7 +67,7 @@ func (a *AgentEndpoint) HandleMessages(exec *semantics.MuSteelExecuter, agent co
 		switch msg.Type {
 		// If it is a memory request...
 		case communication.EndpointMessageTypeMemoryREQ:
-			// ... I respond get the state...
+			// ... I get the state...
 			state := exec.GetState()
 			// ... I get a string representation of the pool...
 			pool := [][]communication.PoolElem{}
@@ -83,7 +83,7 @@ func (a *AgentEndpoint) HandleMessages(exec *semantics.MuSteelExecuter, agent co
 			}
 			// ... and I respond with the state
 			err := a.end.Write(&communication.EndpointMessage{
-				Type: communication.EndpointMessageTypeMemoryRES,
+				Type: communication.EndpointMessageTypeACK,
 				Payload: communication.AgentState{
 					Memory: state.Memory,
 					Pool:   pool,
@@ -103,8 +103,50 @@ func (a *AgentEndpoint) HandleMessages(exec *semantics.MuSteelExecuter, agent co
 			}
 			// ... and I respond with the eventual error
 			err := a.end.Write(&communication.EndpointMessage{
-				Type:    communication.EndpointMessageTypeInputRES,
+				Type:    communication.EndpointMessageTypeACK,
 				Payload: errInputPayload,
+			})
+			if err != nil {
+				log.Println(err)
+				continue
+			}
+		// If it is a debug status request...
+		case communication.EndpointMessageTypeDebugREQ:
+			// ... and I respond with the debug status
+			err := a.end.Write(&communication.EndpointMessage{
+				Type: communication.EndpointMessageTypeACK,
+				Payload: communication.AgentDebugStatus{
+					Paused:    *paused,
+					Verbosity: "N/A",
+				},
+			})
+			if err != nil {
+				log.Println(err)
+				continue
+			}
+		// If it is a debug status change...
+		case communication.EndpointMessageTypeDebugChangeREQ:
+			// ... I execute it...
+			newStatus := msg.Payload.(communication.AgentDebugStatus)
+			*paused = newStatus.Paused
+			log.Println(newStatus.Verbosity)
+			// ... and I respond
+			err := a.end.Write(&communication.EndpointMessage{
+				Type:    communication.EndpointMessageTypeACK,
+				Payload: struct{}{},
+			})
+			if err != nil {
+				log.Println(err)
+				continue
+			}
+		// If it is a debug step request...
+		case communication.EndpointMessageTypeDebugStepREQ:
+			// ... I step the executer...
+			exec.Exec()
+			// ... and I respond
+			err := a.end.Write(&communication.EndpointMessage{
+				Type:    communication.EndpointMessageTypeACK,
+				Payload: struct{}{},
 			})
 			if err != nil {
 				log.Println(err)
@@ -114,7 +156,7 @@ func (a *AgentEndpoint) HandleMessages(exec *semantics.MuSteelExecuter, agent co
 		case communication.EndpointMessageTypeConfigREQ:
 			// ... I respond with the initialization configuration
 			err := a.end.Write(&communication.EndpointMessage{
-				Type:    communication.EndpointMessageTypeConfigRES,
+				Type:    communication.EndpointMessageTypeACK,
 				Payload: agent,
 			})
 			if err != nil {

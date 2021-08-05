@@ -30,12 +30,14 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	// ... and I create the executer
+	// ... I create the executer...
 	log.Println("Creating executer")
 	exec, err := semantics.NewMuSteelExecuter(mem, agent.Rules, communication.MakeMemberlistAgent(mem.ResourceNames(), 5000, agent.Endpoints))
 	if err != nil {
 		log.Fatal(err)
 	}
+	// ... and I create the paused variable
+	paused := false
 	// I connect to the coordinator...
 	log.Println("Connecting to coordinator")
 	end, err := endpoint.New()
@@ -49,12 +51,14 @@ func main() {
 		log.Fatalln(err)
 	}
 	// ... and I start the main message loop
-	go end.HandleMessages(exec, agent)
+	go end.HandleMessages(exec, agent, &paused)
 	// Finally, I start the executer loop
 	log.Println("Starting main loop")
 	for {
-		// I execute a command...
-		exec.Exec()
+		// I execute a command if not paused...
+		if !paused {
+			exec.Exec()
+		}
 		// ... and I sleep for a while
 		time.Sleep(agent.Tick)
 	}
