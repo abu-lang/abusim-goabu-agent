@@ -2,6 +2,7 @@ package endpoint
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"net"
 	"steel-lang/semantics"
@@ -66,10 +67,27 @@ func (a *AgentEndpoint) HandleMessages(exec *semantics.MuSteelExecuter, agent co
 		switch msg.Type {
 		// If it is a memory request...
 		case communication.EndpointMessageTypeMemoryREQ:
-			// ... I respond with the memory state
+			// ... I respond get the state...
+			state := exec.GetState()
+			// ... I get a string representation of the pool...
+			pool := [][]communication.PoolElem{}
+			for _, ruleActions := range state.Pool {
+				poolActions := []communication.PoolElem{}
+				for _, action := range ruleActions {
+					poolActions = append(poolActions, communication.PoolElem{
+						Resource: action.Resource,
+						Value:    fmt.Sprintf("%v", action.Value),
+					})
+				}
+				pool = append(pool, poolActions)
+			}
+			// ... and I respond with the state
 			err := a.end.Write(&communication.EndpointMessage{
-				Type:    communication.EndpointMessageTypeMemoryRES,
-				Payload: exec.GetState().Memory,
+				Type: communication.EndpointMessageTypeMemoryRES,
+				Payload: communication.AgentState{
+					Memory: state.Memory,
+					Pool:   pool,
+				},
 			})
 			if err != nil {
 				log.Println(err)
