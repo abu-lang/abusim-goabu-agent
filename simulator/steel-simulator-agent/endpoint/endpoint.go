@@ -5,10 +5,29 @@ import (
 	"fmt"
 	"log"
 	"net"
+	steelconfig "steel-lang/config"
 	"steel-lang/semantics"
 	"steel-simulator-common/communication"
 	"steel-simulator-common/config"
 )
+
+// nameToLogLevel converts from a log level name to the corresponding level
+var nameToLogLevel = map[string]int{
+	"Fatal":   steelconfig.LogFatal,
+	"Error":   steelconfig.LogError,
+	"Warning": steelconfig.LogWarning,
+	"Info":    steelconfig.LogInfo,
+	"Debug":   steelconfig.LogDebug,
+}
+
+// logLevelToName converts from a log level to the corresponding name
+var logLevelToName = map[int]string{
+	steelconfig.LogFatal:   "Fatal",
+	steelconfig.LogError:   "Error",
+	steelconfig.LogWarning: "Warning",
+	steelconfig.LogInfo:    "Info",
+	steelconfig.LogDebug:   "Debug",
+}
 
 // AgentEndpoint wraps a communication endpoint to add agent functionality
 type AgentEndpoint struct {
@@ -117,7 +136,7 @@ func (a *AgentEndpoint) HandleMessages(exec *semantics.MuSteelExecuter, agent co
 				Type: communication.EndpointMessageTypeACK,
 				Payload: communication.AgentDebugStatus{
 					Paused:    *paused,
-					Verbosity: "N/A",
+					Verbosity: logLevelToName[exec.LogLevel()],
 				},
 			})
 			if err != nil {
@@ -129,7 +148,7 @@ func (a *AgentEndpoint) HandleMessages(exec *semantics.MuSteelExecuter, agent co
 			// ... I execute it...
 			newStatus := msg.Payload.(communication.AgentDebugStatus)
 			*paused = newStatus.Paused
-			log.Println(newStatus.Verbosity)
+			exec.SetLogLevel(nameToLogLevel[newStatus.Verbosity])
 			// ... and I respond
 			err := a.end.Write(&communication.EndpointMessage{
 				Type:    communication.EndpointMessageTypeACK,

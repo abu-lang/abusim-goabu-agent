@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 	"steel-lang/communication"
+	steelconfig "steel-lang/config"
 	"steel-lang/semantics"
 	"steel-simulator-agent/endpoint"
 	"steel-simulator-agent/memory"
@@ -32,7 +33,11 @@ func main() {
 	}
 	// ... I create the executer...
 	log.Println("Creating executer")
-	exec, err := semantics.NewMuSteelExecuter(mem, agent.Rules, communication.MakeMemberlistAgent(mem.ResourceNames(), 5000, agent.Endpoints))
+	logConfig := steelconfig.LogConfig{
+		Encoding: "console",
+		Level:    steelconfig.LogError,
+	}
+	exec, err := semantics.NewMuSteelExecuter(mem, agent.Rules, communication.MakeMemberlistAgent(mem.ResourceNames(), 5000, agent.Endpoints, logConfig), logConfig)
 	if err != nil {
 		log.Fatal(err)
 	}
