@@ -37,7 +37,7 @@ func main() {
 		Encoding: "console",
 		Level:    steelconfig.LogError,
 	}
-	exec, err := semantics.NewMuSteelExecuter(mem, agent.Rules, communication.MakeMemberlistAgent(mem.ResourceNames(), 5000, agent.Endpoints, logConfig), logConfig)
+	exec, err := semantics.NewMuSteelExecuter(mem, agent.Rules, communication.NewMemberlistAgent(5000, logConfig, agent.Endpoints...), logConfig)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -2,15 +2,15 @@ package memory
 
 import (
 	"fmt"
-	"steel-lang/datastructure"
+	"steel-lang/memory"
 	"strconv"
 	"time"
 )
 
 // New creates a new memory, based on the basic resources
-func NewBasicMemory(items map[string]map[string]string) (datastructure.ResourceController, error) {
+func NewBasicMemory(items map[string]map[string]string) (memory.ResourceController, error) {
 	// I create an empty basic memory...
-	mem := datastructure.MakeResources()
+	mem := memory.MakeResources()
 	// ... and I range over the items to initialize it, with the provided initialization value or a default
 	for vartype, values := range items {
 		for name, initvalue := range values {
