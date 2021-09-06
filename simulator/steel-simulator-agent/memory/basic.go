@@ -2,7 +2,7 @@ package memory
 
 import (
 	"fmt"
-	"steel-lang/memory"
+	"steel/memory"
 	"strconv"
 	"time"
 )

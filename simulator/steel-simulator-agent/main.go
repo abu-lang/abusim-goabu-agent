@@ -2,12 +2,12 @@ package main
 
 import (
 	"os"
-	"steel-lang/communication"
-	steelconfig "steel-lang/config"
-	"steel-lang/semantics"
+	"steel"
 	"steel-simulator-agent/endpoint"
 	"steel-simulator-agent/memory"
 	"steel-simulator-common/config"
+	"steel/communication"
+	steelconfig "steel/config"
 	"time"
 
 	"log"
@@ -37,7 +37,7 @@ func main() {
 		Encoding: "console",
 		Level:    steelconfig.LogError,
 	}
-	exec, err := semantics.NewMuSteelExecuter(mem, agent.Rules, communication.NewMemberlistAgent(5000, logConfig, agent.Endpoints...), logConfig)
+	exec, err := steel.NewExecuter(mem, agent.Rules, communication.NewMemberlistAgent(5000, logConfig, agent.Endpoints...), logConfig)
 	if err != nil {
 		log.Fatal(err)
 	}

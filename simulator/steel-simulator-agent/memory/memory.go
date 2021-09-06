@@ -2,7 +2,7 @@ package memory
 
 import (
 	"errors"
-	"steel-lang/memory"
+	"steel/memory"
 )
 
 // New creates a new memory, based on the passed memory controller and items
