@@ -5,7 +5,7 @@ RUN mkdir /agent
 WORKDIR /agent
 
 COPY ./simulator/steel-simulator-common ./simulator/steel-simulator-common
-COPY ./src ./src
+COPY ./steel ./steel
 
 WORKDIR /agent/simulator/steel-simulator-agent
 
