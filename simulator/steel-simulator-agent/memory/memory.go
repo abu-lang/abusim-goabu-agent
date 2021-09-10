@@ -2,7 +2,8 @@ package memory
 
 import (
 	"errors"
-	"steel/memory"
+
+	"github.com/abu-lang/goabu/memory"
 )
 
 // New creates a new memory, based on the passed memory controller and items

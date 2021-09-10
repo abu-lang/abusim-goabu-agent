@@ -2,9 +2,10 @@ package memory
 
 import (
 	"fmt"
-	"steel/memory"
 	"strconv"
 	"time"
+
+	"github.com/abu-lang/goabu/memory"
 )
 
 // New creates a new memory, based on the basic resources

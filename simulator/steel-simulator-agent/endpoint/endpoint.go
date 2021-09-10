@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"log"
 	"net"
-	"steel"
 	"steel-simulator-common/communication"
 	"steel-simulator-common/config"
-	steelconfig "steel/config"
+
+	"github.com/abu-lang/goabu"
+	steelconfig "github.com/abu-lang/goabu/config"
 )
 
 // nameToLogLevel converts from a log level name to the corresponding level
@@ -74,7 +75,7 @@ func (a *AgentEndpoint) SendInit(name string) error {
 }
 
 // HandleMessages listens for messages and responds to them
-func (a *AgentEndpoint) HandleMessages(exec *steel.Executer, agent config.Agent, paused *bool) {
+func (a *AgentEndpoint) HandleMessages(exec *goabu.Executer, agent config.Agent, paused *bool) {
 	for {
 		// I read a message...
 		msg, err := a.end.Read()

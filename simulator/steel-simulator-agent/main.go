@@ -2,13 +2,14 @@ package main
 
 import (
 	"os"
-	"steel"
 	"steel-simulator-agent/endpoint"
 	"steel-simulator-agent/memory"
 	"steel-simulator-common/config"
-	"steel/communication"
-	steelconfig "steel/config"
 	"time"
+
+	"github.com/abu-lang/goabu"
+	"github.com/abu-lang/goabu/communication"
+	steelconfig "github.com/abu-lang/goabu/config"
 
 	"log"
 )
@@ -37,7 +38,7 @@ func main() {
 		Encoding: "console",
 		Level:    steelconfig.LogError,
 	}
-	exec, err := steel.NewExecuter(mem, agent.Rules, communication.NewMemberlistAgent(5000, logConfig, agent.Endpoints...), logConfig)
+	exec, err := goabu.NewExecuter(mem, agent.Rules, communication.NewMemberlistAgent(5000, logConfig, agent.Endpoints...), logConfig)
 	if err != nil {
 		log.Fatal(err)
 	}
