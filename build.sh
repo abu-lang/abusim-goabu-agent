@@ -1,3 +1,3 @@
-pushd ../../
-docker build -f ./simulator/steel-simulator-agent/Dockerfile . -t steel-agent
+pushd ../
+docker build -f ./abusim-goabu-agent-dev/Dockerfile . -t abusim-goabu-agent
 popd

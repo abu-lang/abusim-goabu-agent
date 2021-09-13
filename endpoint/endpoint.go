@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"log"
 	"net"
-	"steel-simulator-common/communication"
-	"steel-simulator-common/config"
+
+	"github.com/abu-lang/abusim-core/schema/communication"
+	"github.com/abu-lang/abusim-core/schema/config"
 
 	"github.com/abu-lang/goabu"
 	steelconfig "github.com/abu-lang/goabu/config"
@@ -38,7 +39,7 @@ type AgentEndpoint struct {
 // New creates a new endpoint, connected to the coordinator
 func New() (*AgentEndpoint, error) {
 	// I resolve the address for the coordinator...
-	tcpAddr, err := net.ResolveTCPAddr("tcp", "steel-coordinator:5001")
+	tcpAddr, err := net.ResolveTCPAddr("tcp", "abusim-coordinator:5001")
 	if err != nil {
 		return nil, err
 	}

@@ -4,22 +4,22 @@ FROM golang:1.16-alpine as build
 RUN mkdir /agent
 WORKDIR /agent
 
-COPY ./simulator/steel-simulator-common ./simulator/steel-simulator-common
+COPY ./abusim-core-dev/schema ./abusim-core-dev/schema
 COPY ./goabu ./goabu
 
-WORKDIR /agent/simulator/steel-simulator-agent
+WORKDIR /agent/abusim-goabu-agent
 
-COPY ./simulator/steel-simulator-agent/go.mod .
-COPY ./simulator/steel-simulator-agent/go.sum .
+COPY ./abusim-goabu-agent-dev/go.mod .
+COPY ./abusim-goabu-agent-dev/go.sum .
 RUN go mod download -x
 
-COPY ./simulator/steel-simulator-agent .
+COPY ./abusim-goabu-agent-dev .
 
 RUN CGO_ENABLED=0 go build
 
 # Create the final image with the executable
 FROM scratch as exec
 
-COPY --from=build /agent/simulator/steel-simulator-agent/steel-simulator-agent /agent
+COPY --from=build /agent/abusim-goabu-agent/abusim-goabu-agent /agent
 
 ENTRYPOINT [ "/agent" ]

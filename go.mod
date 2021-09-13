@@ -7,5 +7,5 @@ require (
 	github.com/abu-lang/goabu v0.0.0
 )
 
-replace github.com/abu-lang/abusim-core/schema => ../abusim-core/schema
+replace github.com/abu-lang/abusim-core/schema => ../abusim-core-dev/schema
 replace github.com/abu-lang/goabu => ../goabu

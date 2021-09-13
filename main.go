@@ -1,15 +1,15 @@
 package main
 
 import (
+	"abusim-goabu-agent/endpoint"
+	"abusim-goabu-agent/memory"
 	"os"
-	"steel-simulator-agent/endpoint"
-	"steel-simulator-agent/memory"
-	"steel-simulator-common/config"
 	"time"
 
+	"github.com/abu-lang/abusim-core/schema/config"
 	"github.com/abu-lang/goabu"
 	"github.com/abu-lang/goabu/communication"
-	steelconfig "github.com/abu-lang/goabu/config"
+	goabuconfig "github.com/abu-lang/goabu/config"
 
 	"log"
 )
@@ -34,9 +34,9 @@ func main() {
 	}
 	// ... I create the executer...
 	log.Println("Creating executer")
-	logConfig := steelconfig.LogConfig{
+	logConfig := goabuconfig.LogConfig{
 		Encoding: "console",
-		Level:    steelconfig.LogError,
+		Level:    goabuconfig.LogError,
 	}
 	exec, err := goabu.NewExecuter(mem, agent.Rules, communication.NewMemberlistAgent(5000, logConfig, agent.Endpoints...), logConfig)
 	if err != nil {
