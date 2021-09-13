@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/abu-lang/abusim-core/schema/config"
+	"github.com/abu-lang/abusim-core/schema"
 	"github.com/abu-lang/goabu"
 	"github.com/abu-lang/goabu/communication"
 	goabuconfig "github.com/abu-lang/goabu/config"
@@ -21,7 +21,7 @@ func main() {
 	}
 	// ... and I deserialize it to get its fields
 	configStr := os.Args[1]
-	agent := config.Agent{}
+	agent := schema.Agent{}
 	err := agent.Deserialize(configStr)
 	if err != nil {
 		log.Fatalf("Bad config deserialization: %v", err)
