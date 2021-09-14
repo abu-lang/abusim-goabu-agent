@@ -21,7 +21,7 @@ func main() {
 	}
 	// ... and I deserialize it to get its fields
 	configStr := os.Args[1]
-	agent := schema.Agent{}
+	agent := schema.AgentConfiguration{}
 	err := agent.Deserialize(configStr)
 	if err != nil {
 		log.Fatalf("Bad config deserialization: %v", err)

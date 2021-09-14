@@ -56,9 +56,12 @@ func New() (*AgentEndpoint, error) {
 // SendInit sends the initialization message to the coordinator
 func (a *AgentEndpoint) SendInit(name string) error {
 	// I write the INIT message, sending the agent name...
+	payload := schema.EndpointMessagePayloadINIT{
+		Name: name,
+	}
 	err := a.end.Write(&schema.EndpointMessage{
 		Type:    schema.EndpointMessageTypeINIT,
-		Payload: name,
+		Payload: &payload,
 	})
 	if err != nil {
 		return err
@@ -75,7 +78,7 @@ func (a *AgentEndpoint) SendInit(name string) error {
 }
 
 // HandleMessages listens for messages and responds to them
-func (a *AgentEndpoint) HandleMessages(exec *goabu.Executer, agent schema.Agent, paused *bool) {
+func (a *AgentEndpoint) HandleMessages(exec *goabu.Executer, agent schema.AgentConfiguration, paused *bool) {
 	for {
 		// I read a message...
 		msg, err := a.end.Read()
@@ -89,6 +92,13 @@ func (a *AgentEndpoint) HandleMessages(exec *goabu.Executer, agent schema.Agent,
 		case schema.EndpointMessageTypeMemoryREQ:
 			// ... I get the state...
 			state := exec.TakeState()
+			// ... I get the memory from the state...
+			memory := schema.MemoryResources{}
+			memory.Bool = state.Memory.Bool
+			memory.Integer = state.Memory.Integer
+			memory.Float = state.Memory.Float
+			memory.Text = state.Memory.Text
+			memory.Time = state.Memory.Time
 			// ... I get a string representation of the pool...
 			pool := [][]schema.PoolElem{}
 			for _, ruleActions := range state.Pool {
@@ -102,12 +112,13 @@ func (a *AgentEndpoint) HandleMessages(exec *goabu.Executer, agent schema.Agent,
 				pool = append(pool, poolActions)
 			}
 			// ... and I respond with the state
+			payload := schema.EndpointMessagePayloadMemoryRES{
+				Memory: memory,
+				Pool:   pool,
+			}
 			err := a.end.Write(&schema.EndpointMessage{
-				Type: schema.EndpointMessageTypeACK,
-				Payload: schema.AgentState{
-					Memory: state.Memory,
-					Pool:   pool,
-				},
+				Type:    schema.EndpointMessageTypeMemoryRES,
+				Payload: &payload,
 			})
 			if err != nil {
 				log.Println(err)
@@ -116,15 +127,18 @@ func (a *AgentEndpoint) HandleMessages(exec *goabu.Executer, agent schema.Agent,
 		// If it is a command to input...
 		case schema.EndpointMessageTypeInputREQ:
 			// ... I execute it...
-			errInput := exec.Input(msg.Payload.(string))
+			errInput := exec.Input(msg.Payload.(*schema.EndpointMessagePayloadInputREQ).Input)
 			errInputPayload := ""
 			if errInput != nil {
 				errInputPayload = errInput.Error()
 			}
 			// ... and I respond with the eventual error
+			payload := schema.EndpointMessagePayloadInputRES{
+				Error: errInputPayload,
+			}
 			err := a.end.Write(&schema.EndpointMessage{
-				Type:    schema.EndpointMessageTypeACK,
-				Payload: errInputPayload,
+				Type:    schema.EndpointMessageTypeInputRES,
+				Payload: &payload,
 			})
 			if err != nil {
 				log.Println(err)
@@ -132,13 +146,14 @@ func (a *AgentEndpoint) HandleMessages(exec *goabu.Executer, agent schema.Agent,
 			}
 		// If it is a debug status request...
 		case schema.EndpointMessageTypeDebugREQ:
-			// ... and I respond with the debug status
+			// ... I respond with the debug status
+			payload := schema.EndpointMessagePayloadDebugRES{
+				Paused:    *paused,
+				Verbosity: logLevelToName[exec.LogLevel()],
+			}
 			err := a.end.Write(&schema.EndpointMessage{
-				Type: schema.EndpointMessageTypeACK,
-				Payload: schema.AgentDebugStatus{
-					Paused:    *paused,
-					Verbosity: logLevelToName[exec.LogLevel()],
-				},
+				Type:    schema.EndpointMessageTypeDebugRES,
+				Payload: &payload,
 			})
 			if err != nil {
 				log.Println(err)
@@ -147,13 +162,13 @@ func (a *AgentEndpoint) HandleMessages(exec *goabu.Executer, agent schema.Agent,
 		// If it is a debug status change...
 		case schema.EndpointMessageTypeDebugChangeREQ:
 			// ... I execute it...
-			newStatus := msg.Payload.(schema.AgentDebugStatus)
+			newStatus := msg.Payload.(*schema.EndpointMessagePayloadDebugChangeREQ)
 			*paused = newStatus.Paused
 			exec.SetLogLevel(nameToLogLevel[newStatus.Verbosity])
 			// ... and I respond
 			err := a.end.Write(&schema.EndpointMessage{
-				Type:    schema.EndpointMessageTypeACK,
-				Payload: struct{}{},
+				Type:    schema.EndpointMessageTypeDebugChangeRES,
+				Payload: nil,
 			})
 			if err != nil {
 				log.Println(err)
@@ -165,8 +180,8 @@ func (a *AgentEndpoint) HandleMessages(exec *goabu.Executer, agent schema.Agent,
 			exec.Exec()
 			// ... and I respond
 			err := a.end.Write(&schema.EndpointMessage{
-				Type:    schema.EndpointMessageTypeACK,
-				Payload: struct{}{},
+				Type:    schema.EndpointMessageTypeDebugStepRES,
+				Payload: nil,
 			})
 			if err != nil {
 				log.Println(err)
@@ -175,9 +190,12 @@ func (a *AgentEndpoint) HandleMessages(exec *goabu.Executer, agent schema.Agent,
 		// If it is a configuration request...
 		case schema.EndpointMessageTypeConfigREQ:
 			// ... I respond with the initialization configuration
+			payload := schema.EndpointMessagePayloadConfigRES{
+				Agent: agent,
+			}
 			err := a.end.Write(&schema.EndpointMessage{
-				Type:    schema.EndpointMessageTypeACK,
-				Payload: agent,
+				Type:    schema.EndpointMessageTypeConfigRES,
+				Payload: &payload,
 			})
 			if err != nil {
 				log.Println(err)
