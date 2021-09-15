@@ -1,8 +1,8 @@
 package main
 
 import (
-	"abusim-goabu-agent/endpoint"
-	"abusim-goabu-agent/memory"
+	"github.com/abu-lang/abusim-core/abusim-goabu-agent/endpoint"
+	"github.com/abu-lang/abusim-core/abusim-goabu-agent/memory"
 	"os"
 	"time"
 
