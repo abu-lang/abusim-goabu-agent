@@ -1,19 +1,18 @@
 # Create the building image for compiling
 FROM golang:1.16-alpine as build
 
-RUN mkdir /agent
-WORKDIR /agent
+RUN apk update
+RUN apk add git
 
-COPY ./abusim-core-dev/schema ./abusim-core-dev/schema
-COPY ./goabu ./goabu
+RUN mkdir /agent
 
 WORKDIR /agent/abusim-goabu-agent
 
-COPY ./abusim-goabu-agent-dev/go.mod .
-COPY ./abusim-goabu-agent-dev/go.sum .
+COPY ./go.mod .
+COPY ./go.sum .
 RUN go mod download -x
 
-COPY ./abusim-goabu-agent-dev .
+COPY . .
 
 RUN CGO_ENABLED=0 go build
 

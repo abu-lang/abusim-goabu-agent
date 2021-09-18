@@ -1,3 +1,1 @@
-pushd ../
-docker build -f ./abusim-goabu-agent-dev/Dockerfile . -t abusim-goabu-agent
-popd
+docker build . -t abulang/abusim-goabu-agent
