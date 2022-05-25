@@ -1,10 +1,11 @@
 package main
 
 import (
-	"github.com/abu-lang/abusim-core/abusim-goabu-agent/endpoint"
-	"github.com/abu-lang/abusim-core/abusim-goabu-agent/memory"
 	"os"
 	"time"
+
+	"github.com/abu-lang/abusim-core/abusim-goabu-agent/endpoint"
+	"github.com/abu-lang/abusim-core/abusim-goabu-agent/memory"
 
 	"github.com/abu-lang/abusim-core/schema"
 	"github.com/abu-lang/goabu"
@@ -38,7 +39,7 @@ func main() {
 		Encoding: "console",
 		Level:    goabuconfig.LogError,
 	}
-	exec, err := goabu.NewExecuter(mem, agent.Rules, communication.NewMemberlistAgent(5000, logConfig, agent.Endpoints...), logConfig)
+	exec, err := goabu.NewExecuter(mem, agent.Rules, communication.NewMemberlistAgent(agent.Name, 5000, logConfig, agent.Endpoints...), logConfig)
 	if err != nil {
 		log.Fatal(err)
 	}
