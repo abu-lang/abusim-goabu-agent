@@ -91,17 +91,17 @@ func (a *AgentEndpoint) HandleMessages(exec *goabu.Executer, agent schema.AgentC
 		// If it is a memory request...
 		case schema.EndpointMessageTypeMemoryREQ:
 			// ... I get the state...
-			state := exec.TakeState()
+			stateMemory, statePool := exec.TakeState()
 			// ... I get the memory from the state...
 			memory := schema.MemoryResources{}
-			memory.Bool = state.Memory.Bool
-			memory.Integer = state.Memory.Integer
-			memory.Float = state.Memory.Float
-			memory.Text = state.Memory.Text
-			memory.Time = state.Memory.Time
+			memory.Bool = stateMemory.Bool
+			memory.Integer = stateMemory.Integer
+			memory.Float = stateMemory.Float
+			memory.Text = stateMemory.Text
+			memory.Time = stateMemory.Time
 			// ... I get a string representation of the pool...
 			pool := [][]schema.PoolElem{}
-			for _, ruleActions := range state.Pool {
+			for _, ruleActions := range statePool {
 				poolActions := []schema.PoolElem{}
 				for _, action := range ruleActions {
 					poolActions = append(poolActions, schema.PoolElem{
